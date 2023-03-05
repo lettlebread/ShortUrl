@@ -8,9 +8,6 @@ on:
   push:
     branches:
       - '*'
-  pull_request:
-    branches:
-      - 'main'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -26,7 +23,7 @@ jobs:
       run: cd short-url && npm run test
   deploy_cloudrun:
     needs: test
-    if: github.ref_name == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     name: Trigger Google Cloud Build
     runs-on: ubuntu-latest
     steps:

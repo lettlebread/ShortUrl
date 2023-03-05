@@ -1,0 +1,51 @@
+name: deploy-cloud-run
+
+env:
+  PROJECT_ID: ${{ secrets.RUN_PROJECT_ID }}
+  SERVICE_NAME: ${{ secrets.RUN_SERVICE_NAME }}
+  
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 14.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
+    - name: Install package
+      run: cd short-url && npm install
+    - name: Testing
+      run: cd short-url && npm run test
+  deploy_cloudrun:
+    needs: test
+    if: github.ref_name == 'refs/heads/main'
+    name: Trigger Google Cloud Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.RUN_SA_KEY }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v0'
+
+    - name: 'Use gcloud CLI'
+      run: 'gcloud info'
+      
+    - name: Build
+      run: |-
+        gcloud builds submit --quiet --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME"
+    - name: Deploy
+      run: |-
+        gcloud config set core/disable_prompts true &&
+        gcloud beta run deploy $SERVICE_NAME --image gcr.io/$PROJECT_ID/$SERVICE_NAME --platform managed --allow-unauthenticated --timeout=60m --region=us-central1 --quiet
+        
+        

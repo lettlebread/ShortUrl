@@ -19,9 +19,10 @@
     "paths": {
       "@/styles/*": ["styles/*"],
       "@/pages/*": ["pages/*"],
-      "@/libs/*": ["libs/*"]
+      "@/libs/*": ["libs/*"],
+      "@/interfaces/*": ["interfaces/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "__tests__/libs/hashUrils", "src/libs/hashUtil"],
   "exclude": ["node_modules"]
 }

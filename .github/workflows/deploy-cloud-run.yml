@@ -3,6 +3,7 @@ name: deploy-cloud-run
 env:
   PROJECT_ID: ${{ secrets.RUN_PROJECT_ID }}
   SERVICE_NAME: ${{ secrets.RUN_SERVICE_NAME }}
+  DB_URL: ${{ secrets.RUN_DB_URL }}
   
 on:
   push:
@@ -46,6 +47,7 @@ jobs:
     - name: Deploy
       run: |-
         gcloud config set core/disable_prompts true &&
-        gcloud beta run deploy $SERVICE_NAME --image gcr.io/$PROJECT_ID/$SERVICE_NAME --platform managed --allow-unauthenticated --timeout=60m --region=us-central1 --quiet
+        gcloud beta run deploy $SERVICE_NAME --image gcr.io/$PROJECT_ID/$SERVICE_NAME --platform managed --allow-unauthenticated --timeout=60m --region=us-central1 --quiet \
+        --set-env-vars DATABASE_URL=$DB_URL
         
         

@@ -77,12 +77,47 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   }
 }
 
+const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
+  try {
+    const entryHash = req.query.entryHash
+
+    if (!isString(entryHash)) {
+      throw {
+        status: 400,
+        message: "invalid entry hash"
+      }
+    }
+
+    const data = await prisma?.urlEntry.delete({
+      where: {
+        hashKey: entryHash as string,
+      }
+    })
+
+    res.status(200).json({});
+  } catch(e: any) {
+    console.log("error in /api/urlentry/[entryHash] deleteHandler", e)
+
+    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
+      res.status(404).json({
+        error: "fail to delete url entry",
+      });
+    } else {
+      res.status(500).json({
+        error: e,
+      });
+    }
+  }
+}
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (req.method === "GET") {
       await getHandler(req, res);
     } else if (req.method === "PATCH") {
       await patchHandler(req, res);
+    } else if (req.method === "DELETE") {
+      await deleteHandler(req, res);
     } else {
       res.status(404).json({});
     }

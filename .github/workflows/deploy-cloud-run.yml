@@ -48,6 +48,6 @@ jobs:
       run: |-
         gcloud config set core/disable_prompts true &&
         gcloud beta run deploy $SERVICE_NAME --image gcr.io/$PROJECT_ID/$SERVICE_NAME --platform managed --allow-unauthenticated --timeout=60m --region=us-central1 --quiet \
-        --set-env-vars DATABASE_URL=$DB_URL COOKIE_PASSWORD=$COOKIE_PWD
+        --set-env-vars DATABASE_URL=$DB_URL,COOKIE_PASSWORD=$COOKIE_PWD
         
         

@@ -27,7 +27,7 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       urlEntry: entry
     });
   } catch(e) {
-    console.log("prisma err", e)
+    console.log("error in /api/urlentry postHandler", e)
     
     res.status(200).json({
       error: e,

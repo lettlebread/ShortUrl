@@ -19,9 +19,9 @@ jobs:
       with:
         node-version: 14.x
     - name: Install package
-      run: cd short-url && npm install
+      run: npm install
     - name: Testing
-      run: cd short-url && npm run test
+      run: npm run test
   deploy_cloudrun:
     needs: test
     if: github.ref == 'refs/heads/main'

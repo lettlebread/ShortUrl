@@ -3,6 +3,7 @@ import { prisma } from "@/libs/dbService"
 import { isString } from '@/libs/stringUtil'
 import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
+import { withSession, createSessionValidator } from '@/middleware/withSession';
 
 const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -86,12 +87,14 @@ const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    const sessionValidator = createSessionValidator(req, res)
+
     if (req.method === "GET") {
-      await getHandler(req, res);
+      await sessionValidator(getHandler);
     } else if (req.method === "PATCH") {
-      await patchHandler(req, res);
+      await sessionValidator(patchHandler);
     } else if (req.method === "DELETE") {
-      await deleteHandler(req, res);
+      await sessionValidator(deleteHandler);
     } else {
       res.status(404).json({});
     }
@@ -100,4 +103,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default errorWrapper(handler);
+export default withSession(errorWrapper((handler)));

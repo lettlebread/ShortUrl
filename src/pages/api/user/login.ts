@@ -4,7 +4,7 @@ import { isString } from '@/libs/stringUtil'
 import { ApiError } from '@/interfaces/request'
 import { compareWithHash } from '@/libs/bycryptUtil'
 import { SessionUser } from "@/interfaces/request"
-import { createSessionWrapper } from '@/middleware/withSession';
+import { withSession } from '@/middleware/withSession';
 import { errorWrapper } from '@/middleware/errorWrapper'
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
@@ -34,7 +34,7 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).json({});
   } catch(e: any) {
     if (typeof e?.code === "string" && e?.code.startsWith("P")) {
-      throw new ApiError(404, "fail to create user")
+      throw new ApiError(401, "invalid email or password")
     } else {
       throw e
     }
@@ -43,10 +43,9 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const withSession = createSessionWrapper(req, res)
 
     if (req.method === "POST") {
-      await withSession(postHandler);
+      await postHandler(req, res);
     } else {
       res.status(404).json({});
     }
@@ -55,4 +54,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default errorWrapper(handler);
+export default withSession(errorWrapper(handler));

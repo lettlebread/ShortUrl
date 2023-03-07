@@ -4,6 +4,7 @@ import { isString } from '@/libs/stringUtil'
 import { createHashString } from '@/libs/hashUtil'
 import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
+import { withSession, createSessionValidator } from '@/middleware/withSession';
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -36,8 +37,10 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    const sessionValidator = createSessionValidator(req, res)
+
     if (req.method === "POST") {
-      await postHandler(req, res);
+      await sessionValidator(postHandler);
     } else {
       res.status(404).json({});
     }
@@ -46,4 +49,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default errorWrapper(handler);
+export default withSession(errorWrapper(handler));

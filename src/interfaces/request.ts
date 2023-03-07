@@ -8,3 +8,8 @@ export class ApiError extends Error {
     this.message = msg
   }
 }
+
+export type SessionUser = {
+  isLoggedIn: boolean
+  id: string
+}

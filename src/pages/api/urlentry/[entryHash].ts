@@ -33,10 +33,56 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   }
 }
 
+const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
+  try {
+    const entryHash = req.query.entryHash
+    const url = req.body.url
+
+    if (!isString(entryHash)) {
+      throw {
+        status: 400,
+        message: "invalid entry hash"
+      }
+    }
+
+    if (!isString(url)) {
+      throw {
+        status: 400,
+        message: "invalid url"
+      }
+    }
+
+    await prisma?.urlEntry.update({
+      where: {
+        hashKey: entryHash as string,
+      },
+      data: {
+        targetUrl: url
+      }
+    })
+
+    res.status(200).json({});
+  } catch(e) {
+    console.log("error in /api/urlentry/[entryHash] patchHandler", e)
+
+    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
+      res.status(404).json({
+        error: "fail to update url entry",
+      });
+    } else {
+      res.status(500).json({
+        error: e,
+      });
+    }
+  }
+}
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (req.method === "GET") {
       await getHandler(req, res);
+    } else if (req.method === "PATCH") {
+      await patchHandler(req, res);
     } else {
       res.status(404).json({});
     }

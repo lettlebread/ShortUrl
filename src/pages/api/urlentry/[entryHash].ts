@@ -62,10 +62,10 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     })
 
     res.status(200).json({});
-  } catch(e) {
+  } catch(e: any) {
     console.log("error in /api/urlentry/[entryHash] patchHandler", e)
 
-    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
+    if (typeof e?.code === "string" && e?.code?.startsWith("P")) {
       res.status(404).json({
         error: "fail to update url entry",
       });

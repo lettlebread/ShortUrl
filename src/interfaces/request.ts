@@ -1,8 +1,10 @@
-export interface CustomError {
-  status: number
+export class ApiError extends Error {
+  statusCode: number
   message: string
-}
-
-export interface CreateEntryBody {
-  url: string
+    
+  constructor(code: number, msg: string) {
+    super()
+    this.statusCode = code
+    this.message = msg
+  }
 }

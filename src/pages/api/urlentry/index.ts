@@ -2,19 +2,19 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from "@/libs/dbService"
 import { isString } from '@/libs/stringUtil'
 import { createHashString } from '@/libs/hashUtil'
+import { ApiError } from '@/interfaces/request'
+import { errorWrapper } from '@/middleware/errorWrapper'
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const url = req.body.url
 
     if (!isString(url)) {
-      throw {
-        status: 400,
-        message: "invalid url"
-      }
+      throw new ApiError(400, "invalid url")
     }
 
     let entry = createHashString()
+
     await prisma?.urlEntry.create({
       data: {
         hashKey: entry,
@@ -23,15 +23,14 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     })
 
     res.status(200).json({
-      error: null,
       urlEntry: entry
     });
-  } catch(e) {
-    console.log("error in /api/urlentry postHandler", e)
-    
-    res.status(200).json({
-      error: e,
-    });
+  } catch(e: any) {
+    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
+      throw new ApiError(404, "fail to create url entry")
+    } else {
+      throw e
+    }
   }
 }
 
@@ -47,4 +46,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default handler;
+export default errorWrapper(handler);

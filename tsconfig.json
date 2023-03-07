@@ -20,7 +20,8 @@
       "@/styles/*": ["styles/*"],
       "@/pages/*": ["pages/*"],
       "@/libs/*": ["libs/*"],
-      "@/interfaces/*": ["interfaces/*"]
+      "@/interfaces/*": ["interfaces/*"],
+      "@/middleware/*": ["middleware/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

@@ -1,16 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from "@/libs/dbService"
 import { isString } from '@/libs/stringUtil'
+import { ApiError } from '@/interfaces/request'
+import { errorWrapper } from '@/middleware/errorWrapper'
 
 const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const entryHash = req.query.entryHash
 
     if (!isString(entryHash)) {
-      throw {
-        status: 400,
-        message: "invalid entry hash"
-      }
+      throw new ApiError(400, "invalid entry hash")
     }
 
     const entry = await prisma?.urlEntry.findUnique({
@@ -25,11 +24,7 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       res.redirect(307, entry.targetUrl);
     }
   } catch(e) {
-    console.log("error in /api/urlentry/[entryHash] getHandler", e)
-    
-    res.status(200).json({
-      error: e,
-    });
+    throw e
   }
 }
 
@@ -39,17 +34,11 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     const url = req.body.url
 
     if (!isString(entryHash)) {
-      throw {
-        status: 400,
-        message: "invalid entry hash"
-      }
+      throw new ApiError(400, "invalid entry hash")
     }
 
     if (!isString(url)) {
-      throw {
-        status: 400,
-        message: "invalid url"
-      }
+      throw new ApiError(400, "invalid url")
     }
 
     await prisma?.urlEntry.update({
@@ -63,16 +52,10 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 
     res.status(200).json({});
   } catch(e: any) {
-    console.log("error in /api/urlentry/[entryHash] patchHandler", e)
-
-    if (typeof e?.code === "string" && e?.code?.startsWith("P")) {
-      res.status(404).json({
-        error: "fail to update url entry",
-      });
+    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
+      throw new ApiError(404, "fail to update url entry")
     } else {
-      res.status(500).json({
-        error: e,
-      });
+      throw e
     }
   }
 }
@@ -82,13 +65,10 @@ const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     const entryHash = req.query.entryHash
 
     if (!isString(entryHash)) {
-      throw {
-        status: 400,
-        message: "invalid entry hash"
-      }
+      throw new ApiError(400, "invalid entry hash")
     }
 
-    const data = await prisma?.urlEntry.delete({
+    await prisma?.urlEntry.delete({
       where: {
         hashKey: entryHash as string,
       }
@@ -96,16 +76,10 @@ const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 
     res.status(200).json({});
   } catch(e: any) {
-    console.log("error in /api/urlentry/[entryHash] deleteHandler", e)
-
     if (typeof e?.code === "string" && e?.code.startsWith("P")) {
-      res.status(404).json({
-        error: "fail to delete url entry",
-      });
+      throw new ApiError(404, "fail to delete url entry")
     } else {
-      res.status(500).json({
-        error: e,
-      });
+      throw e
     }
   }
 }
@@ -126,4 +100,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default handler;
+export default errorWrapper(handler);

@@ -4,7 +4,7 @@ env:
   PROJECT_ID: ${{ secrets.RUN_PROJECT_ID }}
   SERVICE_NAME: ${{ secrets.RUN_SERVICE_NAME }}
   DB_URL: ${{ secrets.RUN_DB_URL }}
-  
+  COOKIE_PWD: ${{ secrets.RUN_COOKIE_PASSWORD }}
 on:
   push:
     branches:
@@ -48,6 +48,6 @@ jobs:
       run: |-
         gcloud config set core/disable_prompts true &&
         gcloud beta run deploy $SERVICE_NAME --image gcr.io/$PROJECT_ID/$SERVICE_NAME --platform managed --allow-unauthenticated --timeout=60m --region=us-central1 --quiet \
-        --set-env-vars DATABASE_URL=$DB_URL COOKIE_PASSWORD=$RUN_COOKIE_PASSWORD
+        --set-env-vars DATABASE_URL=$DB_URL COOKIE_PASSWORD=$COOKIE_PWD
         
         

@@ -90,7 +90,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const sessionValidator = createSessionValidator(req, res)
 
     if (req.method === "GET") {
-      await sessionValidator(getHandler);
+      await getHandler(req, res);
     } else if (req.method === "PATCH") {
       await sessionValidator(patchHandler);
     } else if (req.method === "DELETE") {

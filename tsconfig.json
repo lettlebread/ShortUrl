@@ -21,7 +21,8 @@
       "@/pages/*": ["pages/*"],
       "@/libs/*": ["libs/*"],
       "@/interfaces/*": ["interfaces/*"],
-      "@/middleware/*": ["middleware/*"]
+      "@/middleware/*": ["middleware/*"],
+      "@/clientLib/*": ["clientLib/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

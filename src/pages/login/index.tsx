@@ -1,9 +1,9 @@
-import { Layout, Button, Typography, Form, Row, Col, Input, Alert  } from 'antd';
-import React, { useState } from 'react';
+import { Layout, Button, Typography, Form, Row, Col, Input, Alert } from 'antd';
+import React, { useState, useEffect } from 'react';
 const { Header, Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-import { loginUserApi } from "@/clientLib/request"
+import { loginUserApi, checkSessionApi } from "@/clientLib/request"
 
 export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
@@ -21,6 +21,16 @@ export default function Home() {
       setShowAlert(true)
     }
   }
+
+  const onClickSignUp = (e: any) => {
+    window.location.href = '/register'
+  }
+
+  useEffect(() => {
+    checkSessionApi().then((userData) => {
+      window.location.href = '/urlentry'
+    }).catch((e) => {})
+  }, [])
 
   return (
       <Layout className="layout">
@@ -41,6 +51,9 @@ export default function Home() {
             <Row align="middle">
               <Col span={8} >
                 <Title level={2}>Short Url Service</Title>
+              </Col>
+              <Col span={1} offset={12} >
+                <Button type='primary' onClick={onClickSignUp}>Sign up</Button>
               </Col>
             </Row>
           </Header>

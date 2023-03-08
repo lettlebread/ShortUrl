@@ -1,23 +1,23 @@
 import type { SessionUser } from "@/interfaces/request"
+import type { UrlEntryApiData, NewUrlEntryArg } from "@/interfaces/request"
 
-export const createUrlEntryApi = async (url: string): Promise<string> => {
+export const createUrlEntryApi = async (entryData: NewUrlEntryArg): Promise<UrlEntryApiData> => {
   try {
     const response = await fetch("/api/urlentry", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify(entryData),
     });
   
-
     const data = await response.json();
   
     if (response.status !== 200) {
       throw new Error(data.error);
     }
 
-    return data.urlEntry;
+    return data;
   } catch (e: any) {
     throw new Error(e)
   }
@@ -85,3 +85,84 @@ export const signUpUserApi = async(email: string, password: string): Promise<boo
   }
 }
 
+export const getUserUrlEntryApi = async(): Promise<any> => {
+  try {
+    const response = await fetch("/api/urlentry", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("invalid email or password");
+    }
+
+    const data = await response.json();
+    return data.urlEntries;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}
+
+export const updateUrlEntryApi = async(entryData: NewUrlEntryArg, hashKey: string): Promise<UrlEntryApiData> => {
+  try {
+    const url = `/api/urlentry/${hashKey}`
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(entryData),
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("fail to update url entry");
+    }
+
+    const urlEntry = await response.json();
+    return urlEntry;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}
+
+export const deleteUrlEntryApi = async(hashKey: string): Promise<any> => {
+  try {
+    const url = `/api/urlentry/${hashKey}`
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("fail to delete url entry");
+    }
+
+    return true;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}
+
+export const userLogoutApi = async(): Promise<any> => {
+  try {
+    const url = `/api/user/logout`
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("fail to logout user");
+    }
+
+    return true;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}

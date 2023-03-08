@@ -4,6 +4,7 @@ import { isString } from '@/libs/stringUtil'
 import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
 import { withSession, createSessionValidator } from '@/middleware/withSession';
+import type { NewUrlEntryArg } from "@/interfaces/request"
 
 const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -32,26 +33,29 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const entryHash = req.query.entryHash
-    const url = req.body.url
+    const newEntry: NewUrlEntryArg = req.body
 
     if (!isString(entryHash)) {
       throw new ApiError(400, "invalid entry hash")
     }
 
-    if (!isString(url)) {
+    if (!isString(newEntry.targetUrl)) {
       throw new ApiError(400, "invalid url")
     }
 
-    await prisma?.urlEntry.update({
+    const newUrlEntry = await prisma?.urlEntry.update({
       where: {
         hashKey: entryHash as string,
       },
       data: {
-        targetUrl: url
+        targetUrl: newEntry.targetUrl,
+        name: newEntry.name,
+        description: newEntry.description,
+        updatedAt: new Date()
       }
     })
 
-    res.status(200).json({});
+    res.status(200).json(newUrlEntry);
   } catch(e: any) {
     if (typeof e?.code === "string" && e?.code.startsWith("P")) {
       throw new ApiError(404, "fail to update url entry")

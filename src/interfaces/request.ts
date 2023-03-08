@@ -15,8 +15,34 @@ export type SessionUser = {
   email: string
 }
 
-export type UrlEntryData = {
+export type NewUrlEntryMeta = {
   hashKey: string
   targetUrl: string
   userId?: string
+  name?: string
+  description?: string
+  createdAt: Date
+  updatedAt: Date
+  viewTimes: number
+}
+
+export type NewUrlEntryArg = {
+  name?: string
+  targetUrl: string
+  description?: string
+}
+
+export type UpdateUrlEntryArg = {
+  name?: string
+  targetUrl: string
+  description?: string
+}
+
+export type UrlEntryApiData = {
+  hashKey: string
+  targetUrl: string
+  name: string
+  createdAt: Date
+  updatedAt: Date
+  description: string
 }

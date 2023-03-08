@@ -11,7 +11,7 @@ export const errorWrapper = (handler: (req: NextApiRequest, res: NextApiResponse
       }
 
       if (e?.statusCode) {
-        res.status(e.statusCode).json({ error: e.message });
+        res.status(e.statusCode).json(e.message);
       } else {
         res.status(500).json({ error: "internal server error" });
       }

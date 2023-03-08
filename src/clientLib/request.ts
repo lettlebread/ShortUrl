@@ -1,4 +1,5 @@
 import type { SessionUser } from "@/interfaces/request"
+import type { UrlEntryClientData } from "@/interfaces/request"
 
 export const createUrlEntryApi = async (url: string): Promise<string> => {
   try {
@@ -85,3 +86,64 @@ export const signUpUserApi = async(email: string, password: string): Promise<boo
   }
 }
 
+export const getUserUrlEntryApi = async(): Promise<any> => {
+  try {
+    const response = await fetch("/api/urlentry", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("invalid email or password");
+    }
+
+    const data = await response.json();
+    return data.urlEntries;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}
+
+export const updateUrlEntryApi = async(entryData: UrlEntryClientData): Promise<any> => {
+  try {
+    const url = `/api/urlentry/${entryData.hashKey}`
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(entryData),
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("fail to update url entry");
+    }
+
+    const urlEntries = await response.json();
+    return urlEntries;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}
+
+export const deleteUrlEntryApi = async(hashKey: string): Promise<any> => {
+  try {
+    const url = `/api/urlentry/${hashKey}`
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("fail to delete url entry");
+    }
+
+    return true;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}

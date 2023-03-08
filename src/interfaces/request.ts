@@ -15,8 +15,17 @@ export type SessionUser = {
   email: string
 }
 
-export type UrlEntryData = {
+export type NewUrlEntryData = {
   hashKey: string
   targetUrl: string
   userId?: string
+}
+
+export type UrlEntryClientData = {
+  hashKey: string
+  targetUrl: string
+  name: string
+  createdAt: Date
+  updatedAt: Date
+  description: string
 }

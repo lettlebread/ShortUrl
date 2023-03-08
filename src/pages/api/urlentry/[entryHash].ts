@@ -32,26 +32,29 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const entryHash = req.query.entryHash
-    const url = req.body.url
+    const { targetUrl, name, description } = req.body
 
     if (!isString(entryHash)) {
       throw new ApiError(400, "invalid entry hash")
     }
 
-    if (!isString(url)) {
+    if (!isString(targetUrl)) {
       throw new ApiError(400, "invalid url")
     }
 
-    await prisma?.urlEntry.update({
+    const newUrlEntry = await prisma?.urlEntry.update({
       where: {
         hashKey: entryHash as string,
       },
       data: {
-        targetUrl: url
+        targetUrl,
+        name,
+        description,
+        updatedAt: new Date()
       }
     })
 
-    res.status(200).json({});
+    res.status(200).json(newUrlEntry);
   } catch(e: any) {
     if (typeof e?.code === "string" && e?.code.startsWith("P")) {
       throw new ApiError(404, "fail to update url entry")

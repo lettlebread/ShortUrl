@@ -5,7 +5,7 @@ import { createHashString } from '@/libs/hashUtil'
 import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
 import { withSession, createSessionValidator } from '@/middleware/withSession';
-import { UrlEntryData } from "@/interfaces/request"
+import { NewUrlEntryData, UrlEntryClientData } from "@/interfaces/request"
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -20,7 +20,7 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     let urlEntryData = {
       hashKey: entry,
       targetUrl: url,
-    } as UrlEntryData
+    } as NewUrlEntryData
 
     if (user && user?.isLoggedIn) {
       urlEntryData.userId = user.id
@@ -45,7 +45,7 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const userId = req.session.user?.id
 
-    const urlEntries = await prisma?.urlEntry.findMany({
+    const urlEntries: Array<UrlEntryClientData> = await prisma?.urlEntry.findMany({
       where: {
         userId
       },
@@ -53,7 +53,9 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
         createdAt: true,
         updatedAt: true,
         hashKey: true,
-        targetUrl: true
+        targetUrl: true,
+        name: true,
+        description: true
       }
     })
     res.status(200).json({

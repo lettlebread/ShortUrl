@@ -14,7 +14,6 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-
     if (req.method === "POST") {
       await postHandler(req, res);
     } else {

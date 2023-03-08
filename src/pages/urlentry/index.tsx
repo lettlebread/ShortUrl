@@ -15,6 +15,8 @@ export default function Home() {
       const data: any = await checkSessionApi()
       setUserData(data)
     } catch(e) {
+      setAlertMessage("please login")
+      setShowAlert(true)
       window.location.href = '/'
     }
 
@@ -22,15 +24,11 @@ export default function Home() {
 
   useEffect(() => {
     checkCookie()
-    console.log("checkCookie")
   }, [])
 
   return (
     <Layout className="layout">
       <Layout className="site-layout">
-        { showAlert && (
-          <Alert type="error" message={alertMessage} showIcon/>
-        )}
         <Header
           className="site-layout-background"
           style={{
@@ -38,6 +36,9 @@ export default function Home() {
             paddingInline: 50,
           }}
         >
+          { showAlert && (
+            <Alert type={"error"} message={alertMessage} showIcon/>
+          )}
           <Row align="middle">
             <Col span={8} >
               <Title level={2}>Short Url Service</Title>

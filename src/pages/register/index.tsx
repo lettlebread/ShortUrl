@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
-import { loginUserApi } from "@/clientLib/request"
+import { signUpUserApi } from "@/clientLib/request"
 
 export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
@@ -12,12 +12,12 @@ export default function Home() {
   
   const onFinish = async (formData: any) => {
     try {
-      await loginUserApi(formData.email, formData.password)
-      setAlertMessage("login success")
+      await signUpUserApi(formData.email, formData.password)
+      setAlertMessage("sign up success")
       setShowSuccess(true)
-      window.location.href = '/urlentry'
+      window.location.href = '/login'
     } catch(e: any) {
-      setAlertMessage("login failed")
+      setAlertMessage("sign up failed")
       setShowAlert(true)
     }
   }
@@ -51,7 +51,7 @@ export default function Home() {
               padding: 24,
             }}
           >
-            <Title level={2}>Login</Title>
+            <Title level={2}>Sign Up</Title>
             <Form
               name="basic"
               labelCol={{ span: 8 }}

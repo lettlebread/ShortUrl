@@ -64,3 +64,24 @@ export const loginUserApi = async(email: string, password: string): Promise<bool
     throw new Error(e)
   }
 }
+
+export const signUpUserApi = async(email: string, password: string): Promise<boolean> => {
+  try {
+    const response = await fetch("/api/user/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("invalid email or password");
+    }
+
+    return true;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}
+

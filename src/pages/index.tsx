@@ -10,13 +10,15 @@ import { createUrlEntryApi } from "@/clientLib/request"
 export default function Home() {
   const [shortUrl, setShortUrl] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState();
-  const [alertType, setAlertType] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const onSearch = async (url: string) => {
     try {
       const urlEntry = await createUrlEntryApi(url)
       setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry}`)
+      setAlertMessage("create short url success")
+      setShowSuccess(true)
     } catch (e: any) {
       setShowAlert(true)
       setAlertMessage(e.message)
@@ -33,6 +35,10 @@ export default function Home() {
     window.location.href = '/login'
   }
 
+  const onClickSignUp = (e: any) => {
+    window.location.href = '/register'
+  }
+
   return (
       <Layout className="layout">
         <Layout className="site-layout">
@@ -43,8 +49,11 @@ export default function Home() {
               paddingInline: 50,
             }}
           >
+            { showSuccess && (
+              <Alert type="success" message={alertMessage} showIcon/>
+            )}
             { showAlert && (
-              <Alert type={alertType} message={alertMessage} showIcon closable/>
+              <Alert type={"error"} message={alertMessage} showIcon/>
             )}
             <Row align="middle">
               <Col span={8} >
@@ -54,7 +63,7 @@ export default function Home() {
               <Button onClick={onClickSignIn}>Sign in</Button>
               </Col>
               <Col span={1} offset={1} >
-              <Button type='primary'>Sign up</Button>
+              <Button type='primary' onClick={onClickSignUp}>Sign up</Button>
               </Col>
             </Row>
           </Header>

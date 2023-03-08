@@ -16,7 +16,7 @@ export default function Home() {
   const onSearch = async (targetUrl: string) => {
     try {
       const urlEntry = await createUrlEntryApi({ targetUrl })
-      setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry}`)
+      setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry.hashKey}`)
       setAlertMessage("create short url success")
       setShowSuccess(true)
     } catch (e: any) {

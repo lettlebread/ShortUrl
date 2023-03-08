@@ -1,11 +1,11 @@
 import { Layout, Button, Space, Typography, Card, Row, Col, Input, Tooltip, Alert  } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 const { Header, Content } = Layout;
 const { Title } = Typography;
 const { Search } = Input;
 import { CopyOutlined } from '@ant-design/icons'
 
-import { createUrlEntryApi } from "@/clientLib/request"
+import { createUrlEntryApi, checkSessionApi } from "@/clientLib/request"
 
 export default function Home() {
   const [shortUrl, setShortUrl] = useState("");
@@ -39,6 +39,12 @@ export default function Home() {
     window.location.href = '/register'
   }
 
+  useEffect(() => {
+    checkSessionApi().then((userData) => {
+      window.location.href = '/urlentry'
+    }).catch((e) => {})
+  }, [])
+
   return (
       <Layout className="layout">
         <Layout className="site-layout">
@@ -60,10 +66,10 @@ export default function Home() {
                 <Title level={2}>Short Url Service</Title>
               </Col>
               <Col span={1} offset={12} >
-              <Button onClick={onClickSignIn}>Sign in</Button>
+                <Button onClick={onClickSignIn}>Sign in</Button>
               </Col>
               <Col span={1} offset={1} >
-              <Button type='primary' onClick={onClickSignUp}>Sign up</Button>
+                <Button type='primary' onClick={onClickSignUp}>Sign up</Button>
               </Col>
             </Row>
           </Header>
@@ -76,7 +82,7 @@ export default function Home() {
           >
             <Row align="middle" >
               <Col style={{width: '100%'}}>
-                <Card title="Create new short url" bordered={true} style={{width: '80%', justifyContent: 'center'}}>
+                <Card title="Create new short url" bordered={true} style={{width: 1000, justifyContent: 'center'}}>
                   <Space direction="vertical"
                     style={{width: '100%'}}
                     size="large"

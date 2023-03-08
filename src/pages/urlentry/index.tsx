@@ -5,7 +5,7 @@ const { Title, Text } = Typography;
 const { TextArea } = Input;
 import { PlusOutlined } from '@ant-design/icons';
 
-import { checkSessionApi, getUserUrlEntryApi, updateUrlEntryApi, deleteUrlEntryApi, createUrlEntryApi } from "@/clientLib/request"
+import { checkSessionApi, getUserUrlEntryApi, updateUrlEntryApi, deleteUrlEntryApi, createUrlEntryApi, userLogoutApi } from "@/clientLib/request"
 import { UrlEntryApiData, SessionUser, NewUrlEntryArg } from "@/interfaces/request"
 
 export default function Home() {
@@ -21,18 +21,6 @@ export default function Home() {
   const [inEditItem, setInEditItem] = useState<UrlEntryApiData>({} as UrlEntryApiData);
   const [createModelForm] = Form.useForm();
   const [editModelForm] = Form.useForm();
-
-
-  const checkCookie = async() => {
-    try {
-      const data: any = await checkSessionApi()
-      return data
-    } catch(e) {
-      setAlertMessage("please login")
-      setShowAlert(true)
-      window.location.href = '/'
-    }
-  }
 
   const showHintWithTimer = (type: string, text: string) => {
     setAlertMessage(text)
@@ -130,6 +118,15 @@ export default function Home() {
     })
   }
 
+  const onClickLogout = (e: any) => {
+    userLogoutApi().then(() => {
+      showHintWithTimer("success", "logout success")
+      window.location.href = '/'
+    }).catch((e) => {
+      showHintWithTimer("alert", "logout failed")
+    })
+  }
+
   const alertStyle = {
     position: "absolute",
     zIndex: 99,
@@ -142,12 +139,15 @@ export default function Home() {
   } as React.CSSProperties
 
   useEffect(() => {
-    checkCookie().then((userData) => {
+    checkSessionApi().then((userData) => {
       setUserData(userData)
       return getUserUrlEntryApi()
     }).then((urlEntryData) => {
       setUrlEntryList(urlEntryData)
       setInitLoading(false)
+    }).catch((e) => {
+      showHintWithTimer("alert", "please login")
+      window.location.href = '/'
     })
   }, [])
 
@@ -175,7 +175,7 @@ export default function Home() {
               <Title level={5}>{userData.email}</Title>
             </Col>
             <Col span={1} offset={1} >
-              <Button>Logout</Button>
+              <Button onClick={onClickLogout}>Logout</Button>
             </Col>
           </Row>
         </Header>

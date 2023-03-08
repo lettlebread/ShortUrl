@@ -146,3 +146,23 @@ export const deleteUrlEntryApi = async(hashKey: string): Promise<any> => {
     throw new Error(e)
   }
 }
+
+export const userLogoutApi = async(): Promise<any> => {
+  try {
+    const url = `/api/user/logout`
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    
+    if (response.status !== 200) {
+      throw new Error("fail to logout user");
+    }
+
+    return true;
+  } catch (e: any) {
+    throw new Error(e)
+  }
+}

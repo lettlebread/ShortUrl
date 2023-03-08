@@ -27,7 +27,12 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
       throw new ApiError(401, "invalid email or password")
     }
 
-    const sessionUser = { isLoggedIn: true, id: user.id } as SessionUser
+    const sessionUser = { 
+      isLoggedIn: true,
+      id: user.id,
+      email
+    } as SessionUser
+    
     req.session.user = sessionUser
     await req.session.save()
 

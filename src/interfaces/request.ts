@@ -12,6 +12,7 @@ export class ApiError extends Error {
 export type SessionUser = {
   isLoggedIn: boolean
   id: string
+  email: string
 }
 
 export type UrlEntryData = {

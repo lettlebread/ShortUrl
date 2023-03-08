@@ -5,16 +5,17 @@ const { Title } = Typography;
 const { Search } = Input;
 import { CopyOutlined } from '@ant-design/icons'
 
-import { createUrlEntry } from "@/clientLib/request"
+import { createUrlEntryApi } from "@/clientLib/request"
 
 export default function Home() {
   const [shortUrl, setShortUrl] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState();
+  const [alertType, setAlertType] = useState("");
 
   const onSearch = async (url: string) => {
     try {
-      const urlEntry = await createUrlEntry(url)
+      const urlEntry = await createUrlEntryApi(url)
       setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry}`)
     } catch (e: any) {
       setShowAlert(true)
@@ -28,12 +29,13 @@ export default function Home() {
     }
   }
 
+  const onClickSignIn = (e: any) => {
+    window.location.href = '/login'
+  }
+
   return (
       <Layout className="layout">
         <Layout className="site-layout">
-          { showAlert && (
-            <Alert type="error" message={alertMessage} showIcon/>
-          )}
           <Header
             className="site-layout-background"
             style={{
@@ -41,12 +43,15 @@ export default function Home() {
               paddingInline: 50,
             }}
           >
+            { showAlert && (
+              <Alert type={alertType} message={alertMessage} showIcon closable/>
+            )}
             <Row align="middle">
               <Col span={8} >
                 <Title level={2}>Short Url Service</Title>
               </Col>
               <Col span={1} offset={12} >
-              <Button>Sign in</Button>
+              <Button onClick={onClickSignIn}>Sign in</Button>
               </Col>
               <Col span={1} offset={1} >
               <Button type='primary'>Sign up</Button>

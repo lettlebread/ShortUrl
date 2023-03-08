@@ -5,22 +5,28 @@ import { createHashString } from '@/libs/hashUtil'
 import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
 import { withSession, createSessionValidator } from '@/middleware/withSession';
+import { UrlEntryData } from "@/interfaces/request"
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const url = req.body.url
+    const user = req.session?.user
 
     if (!isString(url)) {
       throw new ApiError(400, "invalid url")
     }
 
     let entry = createHashString()
+    let urlEntryData = {
+      hashKey: entry,
+      targetUrl: url,
+    } as UrlEntryData
 
+    if (user && user?.isLoggedIn) {
+      urlEntryData.userId = user.id
+    }
     await prisma?.urlEntry.create({
-      data: {
-        hashKey: entry,
-        targetUrl: url
-      },
+      data: urlEntryData,
     })
 
     res.status(200).json({
@@ -67,7 +73,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const sessionValidator = createSessionValidator(req, res)
 
     if (req.method === "POST") {
-      await sessionValidator(postHandler);
+      await postHandler(req, res);
     } else if (req.method === "GET") {
       await sessionValidator(getHandler);
     } else {

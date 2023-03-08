@@ -13,3 +13,9 @@ export type SessionUser = {
   isLoggedIn: boolean
   id: string
 }
+
+export type UrlEntryData = {
+  hashKey: string
+  targetUrl: string
+  userId?: string
+}

@@ -1,24 +1,23 @@
 import type { SessionUser } from "@/interfaces/request"
-import type { UrlEntryClientData } from "@/interfaces/request"
+import type { UrlEntryApiData, NewUrlEntryArg } from "@/interfaces/request"
 
-export const createUrlEntryApi = async (url: string): Promise<string> => {
+export const createUrlEntryApi = async (entryData: NewUrlEntryArg): Promise<UrlEntryApiData> => {
   try {
     const response = await fetch("/api/urlentry", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify(entryData),
     });
   
-
     const data = await response.json();
   
     if (response.status !== 200) {
       throw new Error(data.error);
     }
 
-    return data.urlEntry;
+    return data;
   } catch (e: any) {
     throw new Error(e)
   }
@@ -106,9 +105,9 @@ export const getUserUrlEntryApi = async(): Promise<any> => {
   }
 }
 
-export const updateUrlEntryApi = async(entryData: UrlEntryClientData): Promise<any> => {
+export const updateUrlEntryApi = async(entryData: NewUrlEntryArg, hashKey: string): Promise<UrlEntryApiData> => {
   try {
-    const url = `/api/urlentry/${entryData.hashKey}`
+    const url = `/api/urlentry/${hashKey}`
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
@@ -121,8 +120,8 @@ export const updateUrlEntryApi = async(entryData: UrlEntryClientData): Promise<a
       throw new Error("fail to update url entry");
     }
 
-    const urlEntries = await response.json();
-    return urlEntries;
+    const urlEntry = await response.json();
+    return urlEntry;
   } catch (e: any) {
     throw new Error(e)
   }

@@ -13,9 +13,9 @@ export default function Home() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
-  const onSearch = async (url: string) => {
+  const onSearch = async (targetUrl: string) => {
     try {
-      const urlEntry = await createUrlEntryApi(url)
+      const urlEntry = await createUrlEntryApi({ targetUrl })
       setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry}`)
       setAlertMessage("create short url success")
       setShowSuccess(true)

@@ -5,6 +5,7 @@ import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
 import { withSession, createSessionValidator } from '@/middleware/withSession'
 import type { NewUrlEntryArg } from '@/interfaces/request'
+import { SessionUser } from '../../../interfaces/request'
 
 const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -68,16 +69,22 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
     const entryHash = req.query.entryHash
+    const user = req.session.user as SessionUser
 
     if (!isString(entryHash)) {
       throw new ApiError(400, 'invalid entry hash')
     }
 
-    await prisma?.urlEntry.delete({
+    const result = await prisma?.urlEntry.deleteMany({
       where: {
         hashKey: entryHash as string,
+        userId: user.id
       }
     })
+
+    if (result.count === 0) {
+      throw new ApiError(400, 'fail to delete url entry: no permission or entry not exist')
+    }
 
     res.status(200).json({})
   } catch(e: any) {

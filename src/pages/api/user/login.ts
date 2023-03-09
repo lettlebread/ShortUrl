@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from "@/libs/dbService"
+import { prisma } from '@/libs/dbService'
 import { isString } from '@/libs/stringUtil'
 import { ApiError } from '@/interfaces/request'
 import { compareWithHash } from '@/libs/bycryptUtil'
-import { SessionUser } from "@/interfaces/request"
-import { withSession } from '@/middleware/withSession';
+import { SessionUser } from '@/interfaces/request'
+import { withSession } from '@/middleware/withSession'
 import { errorWrapper } from '@/middleware/errorWrapper'
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
@@ -14,7 +14,7 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
     if (!isString(email) ||
       !isString(password)
       ) {
-      throw new ApiError(400, "invalid argument")
+      throw new ApiError(400, 'invalid argument')
     }
 
     const user = await prisma?.user.findUnique({
@@ -24,7 +24,7 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
     })
 
     if (!user || !compareWithHash(password, user.password)) {
-      throw new ApiError(401, "invalid email or password")
+      throw new ApiError(401, 'invalid email or password')
     }
 
     const sessionUser = { 
@@ -36,10 +36,10 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
     req.session.user = sessionUser
     await req.session.save()
 
-    res.status(200).json({});
+    res.status(200).json({})
   } catch(e: any) {
-    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
-      throw new ApiError(401, "invalid email or password")
+    if (typeof e?.code === 'string' && e?.code.startsWith('P')) {
+      throw new ApiError(401, 'invalid email or password')
     } else {
       throw e
     }
@@ -49,14 +49,14 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse) => {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
 
-    if (req.method === "POST") {
-      await postHandler(req, res);
+    if (req.method === 'POST') {
+      await postHandler(req, res)
     } else {
-      res.status(404).json({});
+      res.status(404).json({})
     }
   } catch (e) {
-    throw e;
+    throw e
   }
-};
+}
 
-export default withSession(errorWrapper(handler));
+export default withSession(errorWrapper(handler))

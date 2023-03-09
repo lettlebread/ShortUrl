@@ -1,23 +1,23 @@
-import { Layout, Button, Typography, Form, Row, Col, Input, Alert  } from 'antd';
-import React, { useState, useEffect } from 'react';
-const { Header, Content } = Layout;
-const { Title } = Typography;
+import { Layout, Button, Typography, Form, Row, Col, Input, Alert  } from 'antd'
+import React, { useState, useEffect } from 'react'
+const { Header, Content } = Layout
+const { Title } = Typography
 
-import { signUpUserApi, checkSessionApi } from "@/clientLib/request"
+import { signUpUserApi, checkSessionApi } from '@/clientLib/request'
 
 export default function Home() {
-  const [showAlert, setShowAlert] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
   
   const onFinish = async (formData: any) => {
     try {
       await signUpUserApi(formData.email, formData.password)
-      setAlertMessage("sign up success")
+      setAlertMessage('sign up success')
       setShowSuccess(true)
       window.location.href = '/login'
     } catch(e: any) {
-      setAlertMessage("sign up failed")
+      setAlertMessage('sign up failed')
       setShowAlert(true)
     }
   }
@@ -29,7 +29,9 @@ export default function Home() {
   useEffect(() => {
     checkSessionApi().then((userData) => {
       window.location.href = '/urlentry'
-    }).catch((e) => {})
+    }).catch((e) => {
+      console.log('user not login')
+    })
   }, [])
 
   return (
@@ -46,7 +48,7 @@ export default function Home() {
             <Alert type="success" message={alertMessage} showIcon/>
           )}
           { showAlert && (
-            <Alert type={"error"} message={alertMessage} showIcon/>
+            <Alert type={'error'} message={alertMessage} showIcon/>
           )}
           <Row align="middle">
             <Col span={8} >

@@ -10,18 +10,18 @@ describe('isString test', () => {
   })
 
   it('empty string with allowEmpty', () => {
-    expect(isString("", true)).toBe(true)
+    expect(isString('', true)).toBe(true)
   })
 
   it('empty string with not allowEmpty', () => {
-    expect(isString("")).toBe(false)
+    expect(isString('')).toBe(false)
   })
 
   it('string with allowEmpty', () => {
-    expect(isString("str", true)).toBe(true)
+    expect(isString('str', true)).toBe(true)
   })
 
   it('string with not allowEmpty', () => {
-    expect(isString("str")).toBe(true)
+    expect(isString('str')).toBe(true)
   })
 })

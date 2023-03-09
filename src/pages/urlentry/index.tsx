@@ -1,40 +1,40 @@
-import { Layout, Button, Typography, Row, Col, Alert, List, Space, Modal, Input, Form, FloatButton  } from 'antd';
-import React, { useEffect, useState } from 'react';
-const { Header, Content } = Layout;
-const { Title, Text } = Typography;
-const { TextArea } = Input;
-import { PlusOutlined } from '@ant-design/icons';
+import { Layout, Button, Typography, Row, Col, Alert, List, Space, Modal, Input, Form, FloatButton  } from 'antd'
+import React, { useEffect, useState } from 'react'
+const { Header, Content } = Layout
+const { Title, Text } = Typography
+const { TextArea } = Input
+import { PlusOutlined } from '@ant-design/icons'
 
-import { checkSessionApi, getUserUrlEntryApi, updateUrlEntryApi, deleteUrlEntryApi, createUrlEntryApi, userLogoutApi } from "@/clientLib/request"
-import { UrlEntryApiData, SessionUser, NewUrlEntryArg } from "@/interfaces/request"
+import { checkSessionApi, getUserUrlEntryApi, updateUrlEntryApi, deleteUrlEntryApi, createUrlEntryApi, userLogoutApi } from '@/clientLib/request'
+import { UrlEntryApiData, SessionUser, NewUrlEntryArg } from '@/interfaces/request'
 
 export default function Home() {
-  const [showAlert, setShowAlert] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [userData, setUserData] = useState<SessionUser>({} as SessionUser);
-  const [urlEntryList, setUrlEntryList] = useState<UrlEntryApiData[]>([]);
-  const [initLoading, setInitLoading] = useState(true);
-  const [openEditModel, setOpenEditModel] = useState(false);
-  const [openDeleteModel, setOpenDeleteModel] = useState(false);
-  const [openCreateModel, setOpenCreateModel] = useState(false);
-  const [inEditItem, setInEditItem] = useState<UrlEntryApiData>({} as UrlEntryApiData);
-  const [createModelForm] = Form.useForm();
-  const [editModelForm] = Form.useForm();
+  const [showAlert, setShowAlert] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
+  const [userData, setUserData] = useState<SessionUser>({} as SessionUser)
+  const [urlEntryList, setUrlEntryList] = useState<UrlEntryApiData[]>([])
+  const [initLoading, setInitLoading] = useState(true)
+  const [openEditModel, setOpenEditModel] = useState(false)
+  const [openDeleteModel, setOpenDeleteModel] = useState(false)
+  const [openCreateModel, setOpenCreateModel] = useState(false)
+  const [inEditItem, setInEditItem] = useState<UrlEntryApiData>({} as UrlEntryApiData)
+  const [createModelForm] = Form.useForm()
+  const [editModelForm] = Form.useForm()
 
   const showHintWithTimer = (type: string, text: string) => {
     setAlertMessage(text)
 
-    if (type === "alert") {
+    if (type === 'alert') {
       setShowAlert(true)
-    } else if (type === "success") {
+    } else if (type === 'success') {
       setShowSuccess(true)
     }
     
     setTimeout(() => {
-      if (type === "alert") {
+      if (type === 'alert') {
         setShowAlert(false)
-      } else if (type === "success") {
+      } else if (type === 'success') {
         setShowSuccess(false)
       }
     }, 3000)
@@ -42,7 +42,6 @@ export default function Home() {
 
   const onClickEditItem = (item: UrlEntryApiData) => {
     return (e: any) => {
-      console.log("click", item)
       setInEditItem(item)
       setOpenEditModel(true)
       editModelForm.resetFields()
@@ -61,35 +60,35 @@ export default function Home() {
   }
 
   const onEditModelFormFinish = (formData: NewUrlEntryArg) => {
-    let updateData = {
+    const updateData = {
       targetUrl: formData.targetUrl,
       name: formData.name,
       description: formData.description
     } as NewUrlEntryArg
 
     updateUrlEntryApi(updateData, inEditItem.hashKey).then((newUrlEntry) => {
-      let idx = urlEntryList.findIndex(o => o.hashKey === newUrlEntry.hashKey)
-      let newList = [...urlEntryList]
+      const idx = urlEntryList.findIndex(o => o.hashKey === newUrlEntry.hashKey)
+      const newList = [...urlEntryList]
       newList[idx] = newUrlEntry
       setUrlEntryList(newList)
       setOpenEditModel(false)
-      showHintWithTimer("success", "update success")
+      showHintWithTimer('success', 'update success')
     }).catch((error) => {
-      showHintWithTimer("alert", "update failed")
+      showHintWithTimer('alert', 'update failed')
     })
   }
 
   const onClickDeleteModelOk = (e: any) => {
     deleteUrlEntryApi(inEditItem.hashKey).then(() => {
-      let idx = urlEntryList.findIndex(o => o.hashKey === inEditItem.hashKey)
-      let newList = [...urlEntryList]
+      const idx = urlEntryList.findIndex(o => o.hashKey === inEditItem.hashKey)
+      const newList = [...urlEntryList]
       newList.splice(idx, 1)
       setUrlEntryList(newList)
-      showHintWithTimer("success", "delete success")
+      showHintWithTimer('success', 'delete success')
       setOpenDeleteModel(false)
     }).catch((error) => {
-      console.log("onClickDeleteModelOk err", error)
-      showHintWithTimer("alert", error)
+      console.log('onClickDeleteModelOk err', error)
+      showHintWithTimer('alert', error)
     })
   }
 
@@ -108,32 +107,32 @@ export default function Home() {
 
   const onCreateModelFormFinish = (formData: NewUrlEntryArg) => {
     createUrlEntryApi(formData).then((newEntry: UrlEntryApiData) => {
-      let newList = [...urlEntryList]
+      const newList = [...urlEntryList]
       newList.unshift(newEntry)
       setUrlEntryList(newList)
-      showHintWithTimer("success", "create success")
+      showHintWithTimer('success', 'create success')
       setOpenCreateModel(false)
     }).catch((error) => {
-      showHintWithTimer("alert", "create failed")
+      showHintWithTimer('alert', 'create failed')
     })
   }
 
   const onClickLogout = (e: any) => {
     userLogoutApi().then(() => {
-      showHintWithTimer("success", "logout success")
+      showHintWithTimer('success', 'logout success')
       window.location.href = '/'
     }).catch((e) => {
-      showHintWithTimer("alert", "logout failed")
+      showHintWithTimer('alert', 'logout failed')
     })
   }
 
   const alertStyle = {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 99,
     top: 30,
-    width: "50%",
-    marginLeft: "auto",
-    marginRight: "auto",
+    width: '50%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     left: 0,
     right: 0
   } as React.CSSProperties
@@ -146,7 +145,7 @@ export default function Home() {
       setUrlEntryList(urlEntryData)
       setInitLoading(false)
     }).catch((e) => {
-      showHintWithTimer("alert", "please login")
+      showHintWithTimer('alert', 'please login')
       window.location.href = '/'
     })
   }, [])
@@ -162,10 +161,10 @@ export default function Home() {
           }}
         >
           { showSuccess && (
-            <Alert style={alertStyle} type={"success"} message={alertMessage} showIcon/>
+            <Alert style={alertStyle} type={'success'} message={alertMessage} showIcon/>
           )}
           { showAlert && (
-            <Alert style={alertStyle} type={"error"} message={alertMessage} showIcon/>
+            <Alert style={alertStyle} type={'error'} message={alertMessage} showIcon/>
           )}
           <Row align="middle">
             <Col span={8} >
@@ -189,7 +188,7 @@ export default function Home() {
         <div
           id="scrollableDiv"
           style={{
-            height: "100%",
+            height: '100%',
             overflow: 'auto',
             padding: '0 16px',
           }}
@@ -208,8 +207,8 @@ export default function Home() {
                 ]}
               >
                 <List.Item.Meta
-                  title={<Typography>{item.name || "Untitled"}</Typography>}
-                  description={item.description || "No description"}
+                  title={<Typography>{item.name || 'Untitled'}</Typography>}
+                  description={item.description || 'No description'}
                 ></List.Item.Meta>
                 <Space direction='vertical'>
                   <Text type="secondary">target url: <a href={item.targetUrl}>{item.targetUrl}</a></Text>

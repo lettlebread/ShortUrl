@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from "@/libs/dbService"
+import { prisma } from '@/libs/dbService'
 import { isString } from '@/libs/stringUtil'
 import { createHashString } from '@/libs/hashUtil'
 import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
-import { withSession, createSessionValidator } from '@/middleware/withSession';
-import { NewUrlEntryMeta, UrlEntryApiData, NewUrlEntryArg } from "@/interfaces/request"
+import { withSession, createSessionValidator } from '@/middleware/withSession'
+import { NewUrlEntryMeta, UrlEntryApiData, NewUrlEntryArg } from '@/interfaces/request'
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -13,11 +13,11 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     const user = req.session?.user
 
     if (!isString(newEntry.targetUrl)) {
-      throw new ApiError(400, "invalid url")
+      throw new ApiError(400, 'invalid url')
     }
 
-    let hashKey = createHashString()
-    let urlEntryData = {
+    const hashKey = createHashString()
+    const urlEntryData = {
       hashKey,
       targetUrl: newEntry.targetUrl,
       name: newEntry.name,
@@ -35,10 +35,10 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       data: urlEntryData,
     })
 
-    res.status(200).json(urlEntry);
+    res.status(200).json(urlEntry)
   } catch(e: any) {
-    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
-      throw new ApiError(404, "fail to create url entry")
+    if (typeof e?.code === 'string' && e?.code.startsWith('P')) {
+      throw new ApiError(404, 'fail to create url entry')
     } else {
       throw e
     }
@@ -66,8 +66,8 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       urlEntries
     })
   } catch(e: any) {
-    if (typeof e?.code === "string" && e?.code.startsWith("P")) {
-      throw new ApiError(404, "fail to create url entry")
+    if (typeof e?.code === 'string' && e?.code.startsWith('P')) {
+      throw new ApiError(404, 'fail to create url entry')
     } else {
       throw e
     }
@@ -78,16 +78,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const sessionValidator = createSessionValidator(req, res)
 
-    if (req.method === "POST") {
-      await postHandler(req, res);
-    } else if (req.method === "GET") {
-      await sessionValidator(getHandler);
+    if (req.method === 'POST') {
+      await postHandler(req, res)
+    } else if (req.method === 'GET') {
+      await sessionValidator(getHandler)
     } else {
-      res.status(404).json({});
+      res.status(404).json({})
     }
   } catch (e) {
-    throw e;
+    throw e
   }
-};
+}
 
-export default withSession(errorWrapper(handler));
+export default withSession(errorWrapper(handler))

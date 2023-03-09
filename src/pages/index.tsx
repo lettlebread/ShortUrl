@@ -1,23 +1,23 @@
-import { Layout, Button, Space, Typography, Card, Row, Col, Input, Tooltip, Alert  } from 'antd';
-import React, { useState, useEffect } from 'react';
-const { Header, Content } = Layout;
-const { Title } = Typography;
-const { Search } = Input;
+import { Layout, Button, Space, Typography, Card, Row, Col, Input, Tooltip, Alert  } from 'antd'
+import React, { useState, useEffect } from 'react'
+const { Header, Content } = Layout
+const { Title } = Typography
+const { Search } = Input
 import { CopyOutlined } from '@ant-design/icons'
 
-import { createUrlEntryApi, checkSessionApi } from "@/clientLib/request"
+import { createUrlEntryApi, checkSessionApi } from '@/clientLib/request'
 
 export default function Home() {
-  const [shortUrl, setShortUrl] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  const [shortUrl, setShortUrl] = useState('')
+  const [showAlert, setShowAlert] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
 
   const onSearch = async (targetUrl: string) => {
     try {
       const urlEntry = await createUrlEntryApi({ targetUrl })
       setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry.hashKey}`)
-      setAlertMessage("create short url success")
+      setAlertMessage('create short url success')
       setShowSuccess(true)
     } catch (e: any) {
       setShowAlert(true)
@@ -27,7 +27,7 @@ export default function Home() {
 
   const copyToClipboard = async(e: any): Promise<void> => {
     if (navigator.clipboard) {
-      await navigator.clipboard.writeText(shortUrl);
+      await navigator.clipboard.writeText(shortUrl)
     }
   }
 
@@ -42,7 +42,9 @@ export default function Home() {
   useEffect(() => {
     checkSessionApi().then((userData) => {
       window.location.href = '/urlentry'
-    }).catch((e) => {})
+    }).catch((e) => {
+      console.log('user not login')
+    })
   }, [])
 
   return (
@@ -59,7 +61,7 @@ export default function Home() {
               <Alert type="success" message={alertMessage} showIcon/>
             )}
             { showAlert && (
-              <Alert type={"error"} message={alertMessage} showIcon/>
+              <Alert type={'error'} message={alertMessage} showIcon/>
             )}
             <Row align="middle">
               <Col span={8} >
@@ -91,7 +93,7 @@ export default function Home() {
                     placeholder="input url"
                     allowClear
                     enterButton="create"
-                    style={{width: "100%" }}
+                    style={{width: '100%' }}
                     onSearch={onSearch}
                   />
                   <Input.Group compact>

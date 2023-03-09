@@ -127,7 +127,7 @@ User can send http request to the url of service instance with following path an
 * Response:
   * status: 200
   * payload:
-    ```json
+    ```
     {
       isLoggedIn: boolean
       id: string

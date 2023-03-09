@@ -59,7 +59,8 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
         hashKey: true,
         targetUrl: true,
         name: true,
-        description: true
+        description: true,
+        viewTimes: true
       }
     })
     res.status(200).json({

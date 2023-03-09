@@ -45,4 +45,5 @@ export type UrlEntryApiData = {
   createdAt: Date
   updatedAt: Date
   description: string
+  viewTimes: number
 }

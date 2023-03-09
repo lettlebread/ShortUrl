@@ -7,6 +7,7 @@ import { PlusOutlined } from '@ant-design/icons'
 
 import { checkSessionApi, getUserUrlEntryApi, updateUrlEntryApi, deleteUrlEntryApi, createUrlEntryApi, userLogoutApi } from '@/clientLib/request'
 import { UrlEntryApiData, SessionUser, NewUrlEntryArg } from '@/interfaces/request'
+import { RuleObject } from 'antd/es/form'
 
 export default function Home() {
   const [showAlert, setShowAlert] = useState(false)
@@ -137,6 +138,14 @@ export default function Home() {
     right: 0
   } as React.CSSProperties
 
+  const urlValidator = (_: RuleObject, value: string) => {
+    if(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(value)) {
+      return Promise.resolve()
+    } else {
+      return Promise.reject()
+    }
+  }
+
   useEffect(() => {
     checkSessionApi().then((userData) => {
       setUserData(userData)
@@ -242,7 +251,11 @@ export default function Home() {
               <Form.Item
                 label="Target Url"
                 name="targetUrl"
-                rules={[{ required: true, message: 'Please input target url' }]}
+                rules={[{
+                  required: true,
+                  message: 'Please input target url',
+                  validator: urlValidator
+                }]}
               >
                 <TextArea />
               </Form.Item>
@@ -298,7 +311,11 @@ export default function Home() {
               <Form.Item
                 label="Target Url"
                 name="targetUrl"
-                rules={[{ required: true, message: 'Please input target url' }]}
+                rules={[{
+                  required: true,
+                  message: 'Please input valid target url',
+                  validator: urlValidator
+                }]}
               >
                 <TextArea />
               </Form.Item>

@@ -6,6 +6,7 @@ import { ApiError } from '@/interfaces/request'
 import { errorWrapper } from '@/middleware/errorWrapper'
 import { withSession, createSessionValidator } from '@/middleware/withSession'
 import { NewUrlEntryMeta, UrlEntryApiData, NewUrlEntryArg } from '@/interfaces/request'
+import urlExist from 'url-exist'
 
 const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
@@ -13,6 +14,12 @@ const postHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     const user = req.session?.user
 
     if (!isString(newEntry.targetUrl)) {
+      throw new ApiError(400, 'invalid url')
+    }
+
+    const isUrlValid = await urlExist(newEntry.targetUrl)
+
+    if (!isUrlValid) {
       throw new ApiError(400, 'invalid url')
     }
 

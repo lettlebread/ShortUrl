@@ -6,15 +6,23 @@ import { errorWrapper } from '@/middleware/errorWrapper'
 import { withSession, createSessionValidator } from '@/middleware/withSession'
 import type { NewUrlEntryArg } from '@/interfaces/request'
 import { SessionUser } from '../../../interfaces/request'
+import { getShortUrlCache, setShortUrlCache } from '@/libs/cacheService'
+import { deleteShortUrlCache } from '../../../libs/cacheService/index'
 
 const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
-    const entryHash = req.query.entryHash
+    const entryHash = req.query.entryHash as string
 
     if (!isString(entryHash)) {
       throw new ApiError(400, 'invalid entry hash')
     }
 
+    const cacheRes = getShortUrlCache(entryHash)
+    
+    if (cacheRes) {
+      res.redirect(307, cacheRes)
+      return
+    }
     const entry = await prisma?.urlEntry.findUnique({
       where: {
         hashKey: entryHash as string,
@@ -25,6 +33,7 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       res.status(404).json({})
     } else {
       res.redirect(307, entry.targetUrl)
+      setShortUrlCache(entryHash, entry.targetUrl)
     }
   } catch(e) {
     throw e
@@ -33,7 +42,7 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 
 const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
-    const entryHash = req.query.entryHash
+    const entryHash = req.query.entryHash as string
     const newEntry: NewUrlEntryArg = req.body
 
     if (!isString(entryHash)) {
@@ -56,6 +65,7 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       }
     })
 
+    setShortUrlCache(entryHash, newEntry.targetUrl)
     res.status(200).json(newUrlEntry)
   } catch(e: any) {
     if (typeof e?.code === 'string' && e?.code.startsWith('P')) {
@@ -68,7 +78,7 @@ const patchHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
 
 const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
   try {
-    const entryHash = req.query.entryHash
+    const entryHash = req.query.entryHash as string
     const user = req.session.user as SessionUser
 
     if (!isString(entryHash)) {
@@ -86,6 +96,7 @@ const deleteHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       throw new ApiError(400, 'fail to delete url entry: no permission or entry not exist')
     }
 
+    deleteShortUrlCache(entryHash)
     res.status(200).json({})
   } catch(e: any) {
     if (typeof e?.code === 'string' && e?.code.startsWith('P')) {

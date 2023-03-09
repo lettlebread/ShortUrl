@@ -35,6 +35,17 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
       res.redirect(307, entry.targetUrl)
       setShortUrlCache(entryHash, entry.targetUrl)
     }
+
+    await prisma?.urlEntry.update({
+      where: {
+        hashKey: entryHash as string,
+      },
+      data: {
+        viewTimes: {
+          increment: 1
+        }
+      }
+    })
   } catch(e) {
     throw e
   }

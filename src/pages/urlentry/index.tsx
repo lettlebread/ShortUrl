@@ -222,6 +222,7 @@ export default function Home() {
                 <Space direction='vertical'>
                   <Text type="secondary">target url: <a href={item.targetUrl}>{item.targetUrl}</a></Text>
                   <Text type="secondary">hash: <Text>{item.hashKey}</Text></Text>
+                  <Text type="secondary">view times: <Text>{item.viewTimes}</Text></Text>
                 </Space>
 
               </List.Item>

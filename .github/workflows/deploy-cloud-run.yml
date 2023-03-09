@@ -20,6 +20,8 @@ jobs:
         node-version: 14.x
     - name: Install package
       run: npm install
+    - name: Run Eslint
+      run : npm run lint
     - name: Testing
       run: npm run test
   deploy_cloudrun:

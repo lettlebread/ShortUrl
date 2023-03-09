@@ -10,15 +10,7 @@ on:
     branches:
       - '*'
 jobs:
-  eslint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: stefanoeb/eslint-action@1.0.2
-        with:
-          files: src/ __test__/
   test:
-    needs: eslint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -28,6 +20,8 @@ jobs:
         node-version: 14.x
     - name: Install package
       run: npm install
+    - name: Run Eslint
+      run : npm run lint
     - name: Testing
       run: npm run test
   deploy_cloudrun:

@@ -13,8 +13,16 @@ export default function Home() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
 
+  const urlValidator = (value: string) => {
+    return (/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(value))
+  }
+
   const onSearch = async (targetUrl: string) => {
     try {
+      if (!urlValidator(targetUrl)) {
+        throw Error("invalid url")
+      }
+
       const urlEntry = await createUrlEntryApi({ targetUrl })
       setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry.hashKey}`)
       setAlertMessage('create short url success')

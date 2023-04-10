@@ -18,34 +18,39 @@ const getHandler = async(req: NextApiRequest, res: NextApiResponse ) => {
     }
 
     const cacheRes = getShortUrlCache(entryHash)
+    let targetUrl = ''
     
     if (cacheRes) {
-      res.redirect(307, cacheRes)
-      return
-    }
-    const entry = await prisma?.urlEntry.findUnique({
-      where: {
-        hashKey: entryHash as string,
-      },
-    })
-
-    if (!entry) {
-      res.status(404).json({})
+      targetUrl = cacheRes
     } else {
-      res.redirect(307, entry.targetUrl)
-      setShortUrlCache(entryHash, entry.targetUrl)
+      const entry = await prisma.urlEntry.findUnique({
+        where: {
+          hashKey: entryHash as string,
+        },
+      })
+  
+      if (entry) {
+        targetUrl = entry.targetUrl
+        setShortUrlCache(entryHash, entry.targetUrl)
+      }
     }
 
-    await prisma?.urlEntry.update({
-      where: {
-        hashKey: entryHash as string,
-      },
-      data: {
-        viewTimes: {
-          increment: 1
+    if (targetUrl) {
+      res.redirect(307, targetUrl)
+
+      await prisma.urlEntry.update({
+        where: {
+          hashKey: entryHash as string,
+        },
+        data: {
+          viewTimes: {
+            increment: 1
+          }
         }
-      }
-    })
+      })
+    } else {
+      res.status(404).json({})
+    }
   } catch(e) {
     throw e
   }

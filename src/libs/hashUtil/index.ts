@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import base62 from 'base62/lib/ascii'
+import base62 from 'base62'
 
 export const createHashString = (message?: string): string => {
   const str = message || Date.now().toString()
@@ -7,7 +7,7 @@ export const createHashString = (message?: string): string => {
   return base62.encode(sNum).substring(0, 6)
 }
 
-function stringToNum(str) {
+function stringToNum(str: string) {
   const md5Str = crypto.createHash('md5').update(str).digest('hex')
   let md5BinStr = ''
 

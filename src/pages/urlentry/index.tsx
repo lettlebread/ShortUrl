@@ -129,7 +129,7 @@ export default function Home() {
     })
   }
 
-  const copyToClipboard = async(targetUrl): Promise<void> => {
+  const copyToClipboard = async(targetUrl: string): Promise<void> => {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(targetUrl)
     }
@@ -154,7 +154,7 @@ export default function Home() {
     }
   }
 
-  const createListItem = (item) => {
+  const createListItem = (item: any) => {
     const shortUrl = `${apiBase + item.hashKey}`
 
     return (

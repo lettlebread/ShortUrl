@@ -1,4 +1,5 @@
-import { Layout, Button, Typography, Row, Col, Alert, List, Space, Modal, Input, Form, FloatButton  } from 'antd'
+import { Layout, Button, Typography, Row, Col, Alert, List, Space, Modal, Input, Form, FloatButton, Tooltip } from 'antd'
+import { CopyOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 const { Header, Content } = Layout
 const { Title, Text } = Typography
@@ -14,6 +15,7 @@ export default function Home() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [userData, setUserData] = useState<SessionUser>({} as SessionUser)
+  const [apiBase, setApiBase] = useState('')
   const [urlEntryList, setUrlEntryList] = useState<UrlEntryApiData[]>([])
   const [initLoading, setInitLoading] = useState(true)
   const [openEditModel, setOpenEditModel] = useState(false)
@@ -127,6 +129,12 @@ export default function Home() {
     })
   }
 
+  const copyToClipboard = async(targetUrl): Promise<void> => {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(targetUrl)
+    }
+  }
+
   const alertStyle = {
     position: 'absolute',
     zIndex: 99,
@@ -146,6 +154,37 @@ export default function Home() {
     }
   }
 
+  const createListItem = (item) => {
+    const shortUrl = `${apiBase + item.hashKey}`
+
+    return (
+      <List.Item
+        key={item.name}
+        actions={[
+          <Button type="primary" key="edit-btn" onClick={onClickEditItem(item)}>edit</Button>,
+          <Button key="delete-btn" onClick={onClickDeleteItem(item)}>delete</Button>
+        ]}
+      >
+        <List.Item.Meta
+          title={<Typography>{item.name || 'Untitled'}</Typography>}
+          description={item.description || 'No description'}
+        ></List.Item.Meta>
+        <Space direction='vertical'>
+          <Text type="secondary">target url: <a href={item.targetUrl}>{item.targetUrl}</a></Text>
+          <Space direction='horizontal'>
+            <Text type="secondary">
+              short url: <a href={shortUrl}>{shortUrl}</a>
+            </Text>
+            <Tooltip title="copy url">
+              <Button icon={<CopyOutlined />} onClick={()=>copyToClipboard(shortUrl)} />
+            </Tooltip>
+          </Space>
+          <Text type="secondary">view times: <Text>{item.viewTimes}</Text></Text>
+        </Space>
+      </List.Item>
+    )
+  }
+
   useEffect(() => {
     checkSessionApi().then((userData) => {
       setUserData(userData)
@@ -157,6 +196,8 @@ export default function Home() {
       showHintWithTimer('alert', 'please login')
       window.location.href = '/'
     })
+
+    setApiBase(`${location.protocol + '//' + window.location.host + '/api/urlentry/'}`)
   }, [])
 
   return (
@@ -194,6 +235,7 @@ export default function Home() {
             padding: 24,
           }}
         >
+        <Title level={3}>My Url Entries</Title>
         <div
           id="scrollableDiv"
           style={{
@@ -208,24 +250,7 @@ export default function Home() {
             itemLayout="vertical"
             dataSource={urlEntryList}
             renderItem={(item) => (
-              <List.Item
-                key={item.name}
-                actions={[
-                  <Button type="primary" key="edit-btn" onClick={onClickEditItem(item)}>edit</Button>,
-                  <Button key="delete-btn" onClick={onClickDeleteItem(item)}>delete</Button>
-                ]}
-              >
-                <List.Item.Meta
-                  title={<Typography>{item.name || 'Untitled'}</Typography>}
-                  description={item.description || 'No description'}
-                ></List.Item.Meta>
-                <Space direction='vertical'>
-                  <Text type="secondary">target url: <a href={item.targetUrl}>{item.targetUrl}</a></Text>
-                  <Text type="secondary">hash: <Text>{item.hashKey}</Text></Text>
-                  <Text type="secondary">view times: <Text>{item.viewTimes}</Text></Text>
-                </Space>
-
-              </List.Item>
+              createListItem(item)
             )}
           />
         </div>

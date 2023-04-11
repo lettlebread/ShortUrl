@@ -1,4 +1,4 @@
-import { Layout, Button, Typography, Row, Col, Alert, List, Space, Modal, Input, Form, FloatButton, Tooltip } from 'antd'
+import { Layout, Button, Typography, Row, Col, Alert, List, Space, Modal, Input, Form, FloatButton, Tooltip, Spin } from 'antd'
 import { CopyOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 const { Header, Content } = Layout
@@ -9,8 +9,10 @@ import { PlusOutlined } from '@ant-design/icons'
 import { checkSessionApi, getUserUrlEntryApi, updateUrlEntryApi, deleteUrlEntryApi, createUrlEntryApi, userLogoutApi } from '@/clientLib/request'
 import { UrlEntryApiData, SessionUser, NewUrlEntryArg } from '@/interfaces/request'
 import { RuleObject } from 'antd/es/form'
+import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Home() {
+  const [isLogin, setIsLogin] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
@@ -185,22 +187,7 @@ export default function Home() {
     )
   }
 
-  useEffect(() => {
-    checkSessionApi().then((userData) => {
-      setUserData(userData)
-      return getUserUrlEntryApi()
-    }).then((urlEntryData) => {
-      setUrlEntryList(urlEntryData)
-      setInitLoading(false)
-    }).catch((e) => {
-      showHintWithTimer('alert', 'please login')
-      window.location.href = '/'
-    })
-
-    setApiBase(`${location.protocol + '//' + window.location.host + '/api/urlentry/'}`)
-  }, [])
-
-  return (
+  const App = () => (
     <Layout className="layout">
       <Layout className="site-layout">
         <Header
@@ -376,5 +363,26 @@ export default function Home() {
         </Content>
       </Layout>
     </Layout>
+  )
+
+  useEffect(() => {
+    checkSessionApi().then((userData) => {
+      setIsLogin(true)
+      setUserData(userData)
+      return getUserUrlEntryApi()
+    }).then((urlEntryData) => {
+      setUrlEntryList(urlEntryData)
+      setInitLoading(false)
+    }).catch((e) => {
+      window.location.href = '/'
+    })
+
+    setApiBase(`${location.protocol + '//' + window.location.host + '/api/urlentry/'}`)
+  }, [])
+
+  return (
+    <div>
+      {isLogin ? <App /> : <LoadingScreen />}
+    </div>
   )
 }

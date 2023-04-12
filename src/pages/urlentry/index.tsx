@@ -12,7 +12,8 @@ import { RuleObject } from 'antd/es/form'
 import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Home() {
-  const [showLoading, setShowLoading] = useState(true)
+  const [showTransScreen, setShowTransScreen] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
@@ -71,28 +72,35 @@ export default function Home() {
       description: formData.description
     } as NewUrlEntryArg
 
+    setIsLoading(true)
+    setOpenEditModel(false)
     updateUrlEntryApi(updateData, inEditItem.hashKey).then((newUrlEntry) => {
+      setIsLoading(false)
       const idx = urlEntryList.findIndex(o => o.hashKey === newUrlEntry.hashKey)
       const newList = [...urlEntryList]
       newList[idx] = newUrlEntry
       setUrlEntryList(newList)
-      setOpenEditModel(false)
       showHintWithTimer('success', 'update success')
     }).catch((error) => {
+      setIsLoading(false)
+      setOpenEditModel(true)
       showHintWithTimer('alert', 'update failed')
     })
   }
 
   const onClickDeleteModelOk = (e: any) => {
+    setOpenDeleteModel(false)
+    setIsLoading(true)
     deleteUrlEntryApi(inEditItem.hashKey).then(() => {
       const idx = urlEntryList.findIndex(o => o.hashKey === inEditItem.hashKey)
       const newList = [...urlEntryList]
       newList.splice(idx, 1)
       setUrlEntryList(newList)
+      setIsLoading(false)
       showHintWithTimer('success', 'delete success')
-      setOpenDeleteModel(false)
     }).catch((error) => {
       console.log('onClickDeleteModelOk err', error)
+      setIsLoading(false)
       showHintWithTimer('alert', error)
     })
   }
@@ -111,22 +119,29 @@ export default function Home() {
   }
 
   const onCreateModelFormFinish = (formData: NewUrlEntryArg) => {
+    setIsLoading(true)
+    setOpenCreateModel(false)
     createUrlEntryApi(formData).then((newEntry: UrlEntryApiData) => {
+      setIsLoading(false)
       const newList = [...urlEntryList]
       newList.unshift(newEntry)
       setUrlEntryList(newList)
       showHintWithTimer('success', 'create success')
-      setOpenCreateModel(false)
     }).catch((error) => {
+      setIsLoading(false)
+      setOpenCreateModel(true)
       showHintWithTimer('alert', 'create failed')
     })
   }
 
   const onClickLogout = (e: any) => {
+    setIsLoading(true)
     userLogoutApi().then(() => {
+      setIsLoading(false)
       showHintWithTimer('success', 'logout success')
       window.location.href = '/'
     }).catch((e) => {
+      setIsLoading(false)
       showHintWithTimer('alert', 'logout failed')
     })
   }
@@ -188,186 +203,190 @@ export default function Home() {
   }
 
   const App = () => (
-    <Layout className="layout">
-      <Layout className="site-layout">
-        <Header
-          className="site-layout-background"
-          style={{
-            padding: 0,
-            paddingInline: 50,
-          }}
-        >
-          { showSuccess && (
-            <Alert style={alertStyle} type={'success'} message={alertMessage} showIcon/>
-          )}
-          { showAlert && (
-            <Alert style={alertStyle} type={'error'} message={alertMessage} showIcon/>
-          )}
-          <Row align="middle">
-            <Col span={8} >
-              <Title level={2}>Short Url Service</Title>
-            </Col>
-            <Col span={3} offset={9} >
-              <Title level={5}>{userData.email}</Title>
-            </Col>
-            <Col span={1} offset={1} >
-              <Button onClick={onClickLogout}>Logout</Button>
-            </Col>
-          </Row>
-        </Header>
-        <Content
-          className="site-layout-background"
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-          }}
-        >
-        <Title level={3}>My Url Entries</Title>
-        <div
-          id="scrollableDiv"
-          style={{
-            height: '100%',
-            overflow: 'auto',
-            padding: '0 16px',
-          }}
-        >
-          <List
-            className="demo-loadmore-list"
-            loading={initLoading}
-            itemLayout="vertical"
-            dataSource={urlEntryList}
-            renderItem={(item) => (
-              createListItem(item)
+    <Spin spinning={isLoading} style={{minHeight: '100vh'}}>
+      <Layout className="layout">
+        <Layout className="site-layout">
+          <Header
+            className="site-layout-background"
+            style={{
+              padding: 0,
+              paddingInline: 50,
+            }}
+          >
+            { showSuccess && (
+              <Alert style={alertStyle} type={'success'} message={alertMessage} showIcon/>
             )}
-          />
-        </div>
+            { showAlert && (
+              <Alert style={alertStyle} type={'error'} message={alertMessage} showIcon/>
+            )}
+            <Row align="middle">
+              <Col span={8} >
+                <Title level={2}>Short Url Service</Title>
+              </Col>
+              <Col span={3} offset={9} >
+                <Title level={5}>{userData.email}</Title>
+              </Col>
+              <Col span={1} offset={1} >
+                <Button onClick={onClickLogout}>Logout</Button>
+              </Col>
+            </Row>
+          </Header>
+          <Content
+            className="site-layout-background"
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+            }}
+          >
+          <Title level={3}>My Url Entries</Title>
+          <div
+            id="scrollableDiv"
+            style={{
+              height: '100%',
+              overflow: 'auto',
+              padding: '0 16px',
+            }}
+          >
+            <List
+              className="demo-loadmore-list"
+              loading={initLoading}
+              itemLayout="vertical"
+              dataSource={urlEntryList}
+              renderItem={(item) => (
+                createListItem(item)
+              )}
+            />
+          </div>
 
-          <Modal
-            title="Update Url Entry"
-            open={openEditModel}
-            okText="Save"
-            footer={null}
-            onCancel={onClicEditModelCancel}
-          >
-            <Form
-              form={editModelForm}
-              name="basic"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              style={{ maxWidth: 600 }}
-              initialValues={{ remember: false }}
-              onFinish={onEditModelFormFinish}
-              requiredMark
-              autoComplete="off"
-              validateTrigger="onChange"
+            <Modal
+              title="Update Url Entry"
+              open={openEditModel}
+              okText="Save"
+              footer={null}
+              onCancel={onClicEditModelCancel}
             >
-              <Form.Item
-                label="Target Url"
-                name="targetUrl"
-                rules={[{
-                  required: true,
-                  message: 'Please input target url',
-                  validator: urlValidator
-                }]}
+              <Form
+                form={editModelForm}
+                name="basic"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                style={{ maxWidth: 600 }}
+                initialValues={{ remember: isLoading }}
+                onFinish={onEditModelFormFinish}
+                requiredMark
+                autoComplete="off"
+                validateTrigger="onChange"
               >
-                <TextArea />
-              </Form.Item>
-              <Form.Item
-                label="Entry Name"
-                name="name"
-                rules={[{ required: false, message: 'Please input entry name' }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Description"
-                name="description"
-                rules={[{ required: false, message: 'Please input description' }]}
-              >
-                <Input />
-              </Form.Item>
-              
-              <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                <Button type="primary" htmlType="submit">
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
-          </Modal>
-          <Modal
-            title="Title"
-            open={openDeleteModel}
-            onOk={onClickDeleteModelOk}
-            onCancel={onClickDeleteModelCancel}
-          >
-            <p>Are you sure to delete this url entry?</p>
-          </Modal>
-          <Modal
-            title="Create Url Entry"
-            open={openCreateModel}
-            okText="Create"
-            footer={null}
-            onCancel={onClickCreateModelCancel}
-          >
-            <Form
-              form={createModelForm}
-              name="basic"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              style={{ maxWidth: 600 }}
-              initialValues={{ remember: false }}
-              onFinish={onCreateModelFormFinish}
-              requiredMark
-              autoComplete="off"
-              validateTrigger="onChange"
+                <Form.Item
+                  label="Target Url"
+                  name="targetUrl"
+                  rules={[{
+                    required: true,
+                    message: 'Please input target url',
+                    validator: urlValidator
+                  }]}
+                >
+                  <TextArea />
+                </Form.Item>
+                <Form.Item
+                  label="Entry Name"
+                  name="name"
+                  rules={[{ required: false, message: 'Please input entry name' }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  label="Description"
+                  name="description"
+                  rules={[{ required: false, message: 'Please input description' }]}
+                >
+                  <Input />
+                </Form.Item>
+                
+                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                  <Button type="primary" htmlType="submit">
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Modal>
+            <Modal
+              title="Title"
+              open={openDeleteModel}
+              onOk={onClickDeleteModelOk}
+              onCancel={onClickDeleteModelCancel}
             >
-              <Form.Item
-                label="Target Url"
-                name="targetUrl"
-                rules={[{
-                  required: true,
-                  message: 'Please input valid target url',
-                  validator: urlValidator
-                }]}
+              <p>Are you sure to delete this url entry?</p>
+            </Modal>
+            <Modal
+              title="Create Url Entry"
+              open={openCreateModel}
+              okText="Create"
+              footer={null}
+              onCancel={onClickCreateModelCancel}
+              maskClosable={isLoading}
+            >
+              <Form
+                form={createModelForm}
+                name="basic"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                style={{ maxWidth: 600 }}
+                initialValues={{ remember: isLoading }}
+                onFinish={onCreateModelFormFinish}
+                requiredMark
+                autoComplete="off"
+                validateTrigger="onChange"
               >
-                <TextArea />
-              </Form.Item>
-              <Form.Item
-                label="Entry Name"
-                name="name"
-                rules={[{ required: false, message: 'Please input entry name' }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Description"
-                name="description"
-                rules={[{ required: false, message: 'Please input description' }]}
-              >
-                <Input />
-              </Form.Item>
-              
-              <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                <Button type="primary" htmlType="submit">
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
-          </Modal>
-          <FloatButton 
-            tooltip="Create url entry"
-            type="primary"
-            icon={<PlusOutlined />}
-            style={{ right: 100, top: 200 }}
-            onClick={onClickCreateEntry} />
-        </Content>
+                <Form.Item
+                  label="Target Url"
+                  name="targetUrl"
+                  rules={[{
+                    required: true,
+                    message: 'Please input valid target url',
+                    validator: urlValidator
+                  }]}
+                >
+                  <TextArea />
+                </Form.Item>
+                <Form.Item
+                  label="Entry Name"
+                  name="name"
+                  rules={[{ required: false, message: 'Please input entry name' }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  label="Description"
+                  name="description"
+                  rules={[{ required: false, message: 'Please input description' }]}
+                >
+                  <Input />
+                </Form.Item>
+                
+                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                  <Button type="primary" htmlType="submit">
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Modal>
+            <FloatButton 
+              tooltip="Create url entry"
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{ right: 100, top: 200 }}
+              onClick={onClickCreateEntry} />
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </Spin>
+
   )
 
   useEffect(() => {
     checkSessionApi().then((userData) => {
-      setShowLoading(false)
+      setShowTransScreen(false)
       setUserData(userData)
       return getUserUrlEntryApi()
     }).then((urlEntryData) => {
@@ -382,7 +401,7 @@ export default function Home() {
 
   return (
     <div>
-      {showLoading ? <LoadingScreen /> : <App />}
+      {showTransScreen ? <LoadingScreen /> : <App />}
     </div>
   )
 }

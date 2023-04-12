@@ -12,7 +12,7 @@ import { RuleObject } from 'antd/es/form'
 import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Home() {
-  const [showLoading, setShowLoading] = useState(true)
+  const [showTransScreen, setShowTransScreen] = useState(true)
   const [showAlert, setShowAlert] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
@@ -367,7 +367,7 @@ export default function Home() {
 
   useEffect(() => {
     checkSessionApi().then((userData) => {
-      setShowLoading(false)
+      setShowTransScreen(false)
       setUserData(userData)
       return getUserUrlEntryApi()
     }).then((urlEntryData) => {
@@ -382,7 +382,7 @@ export default function Home() {
 
   return (
     <div>
-      {showLoading ? <LoadingScreen /> : <App />}
+      {showTransScreen ? <LoadingScreen /> : <App />}
     </div>
   )
 }

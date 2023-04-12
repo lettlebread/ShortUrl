@@ -4,8 +4,10 @@ const { Header, Content } = Layout
 const { Title } = Typography
 
 import { signUpUserApi, checkSessionApi } from '@/clientLib/request'
+import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Home() {
+  const [showTransScreen, setShowTransScreen] = useState(true)
   const [showAlert, setShowAlert] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
@@ -53,15 +55,7 @@ export default function Home() {
     }, 3000)
   }
 
-  useEffect(() => {
-    checkSessionApi().then((userData) => {
-      window.location.href = '/urlentry'
-    }).catch((e) => {
-      console.log('user not login')
-    })
-  }, [])
-
-  return (
+  const App = () => (
     <Layout className="layout">
       <Layout className="site-layout">
         { showSuccess && (
@@ -126,5 +120,20 @@ export default function Home() {
         </Content>
       </Layout>
     </Layout>
+  )
+
+  useEffect(() => {
+    checkSessionApi().then((userData) => {
+      window.location.href = '/urlentry'
+    }).catch((e) => {
+      setShowTransScreen(false)
+      console.log('user not login')
+    })
+  }, [])
+
+  return (
+    <div>
+      {showTransScreen ? <LoadingScreen /> : <App />}
+    </div>
   )
 }

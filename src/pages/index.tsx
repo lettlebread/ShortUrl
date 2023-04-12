@@ -1,7 +1,7 @@
 import { Layout, Button, Space, Typography, Card, Row, Col, Input, Tooltip, Alert  } from 'antd'
 import React, { useState, useEffect } from 'react'
 const { Header, Content } = Layout
-const { Title } = Typography
+const { Title, Text } = Typography
 const { Search } = Input
 import { CopyOutlined } from '@ant-design/icons'
 
@@ -27,11 +27,11 @@ export default function Home() {
 
       const urlEntry = await createUrlEntryApi({ targetUrl })
       setShortUrl(`${window.location.origin}/api/urlentry/${urlEntry.hashKey}`)
-      setAlertMessage('create short url success')
+      showHintWithTimer('success', 'short url create success')
       setShowSuccess(true)
     } catch (e: any) {
       setShowAlert(true)
-      setAlertMessage(e.message)
+      showHintWithTimer('alert', 'short url create failed')
     }
   }
 
@@ -49,9 +49,44 @@ export default function Home() {
     window.location.href = '/register'
   }
 
+  const alertStyle = {
+    position: 'absolute',
+    zIndex: 99,
+    top: 30,
+    width: '50%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    left: 0,
+    right: 0
+  } as React.CSSProperties
+
+  const showHintWithTimer = (type: string, text: string) => {
+    setAlertMessage(text)
+
+    if (type === 'alert') {
+      setShowAlert(true)
+    } else if (type === 'success') {
+      setShowSuccess(true)
+    }
+
+    setTimeout(() => {
+      if (type === 'alert') {
+        setShowAlert(false)
+      } else if (type === 'success') {
+        setShowSuccess(false)
+      }
+    }, 3000)
+  }
+
   const App = () => (
     <Layout className="layout">
       <Layout className="site-layout">
+        { showSuccess && (
+          <Alert type="success" style={alertStyle} message={alertMessage} showIcon/>
+        )}
+        { showAlert && (
+          <Alert type={'error'} style={alertStyle} message={alertMessage} showIcon/>
+        )}
         <Header
           className="site-layout-background"
           style={{
@@ -59,12 +94,6 @@ export default function Home() {
             paddingInline: 50,
           }}
         >
-          { showSuccess && (
-            <Alert type="success" message={alertMessage} showIcon/>
-          )}
-          { showAlert && (
-            <Alert type={'error'} message={alertMessage} showIcon/>
-          )}
           <Row align="middle">
             <Col span={8} >
               <Title level={2}>Short Url Service</Title>

@@ -13,17 +13,44 @@ export default function Home() {
   const onFinish = async (formData: any) => {
     try {
       await signUpUserApi(formData.email, formData.password)
-      setAlertMessage('sign up success')
-      setShowSuccess(true)
+      showHintWithTimer('success', 'login success')
       window.location.href = '/login'
     } catch(e: any) {
-      setAlertMessage('sign up failed')
-      setShowAlert(true)
+      showHintWithTimer('alert', 'login failed')
     }
   }
 
   const onClickSignIn = (e: any) => {
     window.location.href = '/login'
+  }
+
+  const alertStyle = {
+    position: 'absolute',
+    zIndex: 99,
+    top: 30,
+    width: '50%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    left: 0,
+    right: 0
+  } as React.CSSProperties
+
+  const showHintWithTimer = (type: string, text: string) => {
+    setAlertMessage(text)
+
+    if (type === 'alert') {
+      setShowAlert(true)
+    } else if (type === 'success') {
+      setShowSuccess(true)
+    }
+
+    setTimeout(() => {
+      if (type === 'alert') {
+        setShowAlert(false)
+      } else if (type === 'success') {
+        setShowSuccess(false)
+      }
+    }, 3000)
   }
 
   useEffect(() => {
@@ -37,6 +64,12 @@ export default function Home() {
   return (
     <Layout className="layout">
       <Layout className="site-layout">
+        { showSuccess && (
+              <Alert type="success" style={alertStyle} message={alertMessage} showIcon/>
+        )}
+        { showAlert && (
+          <Alert type={'error'} style={alertStyle} message={alertMessage} showIcon/>
+        )}
         <Header
           className="site-layout-background"
           style={{
@@ -44,12 +77,6 @@ export default function Home() {
             paddingInline: 50,
           }}
         >
-          { showSuccess && (
-            <Alert type="success" message={alertMessage} showIcon/>
-          )}
-          { showAlert && (
-            <Alert type={'error'} message={alertMessage} showIcon/>
-          )}
           <Row align="middle">
             <Col span={8} >
               <Title level={2}>Short Url Service</Title>

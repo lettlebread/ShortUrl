@@ -1,4 +1,4 @@
-import { Layout, Button, Typography, Form, Row, Col, Input, Alert  } from 'antd'
+import { Layout, Button, Typography, Form, Row, Col, Input, Alert, Spin  } from 'antd'
 import React, { useState, useEffect } from 'react'
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -8,16 +8,20 @@ import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Home() {
   const [showTransScreen, setShowTransScreen] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   
   const onFinish = async (formData: any) => {
     try {
+      setIsLoading(true)
       await signUpUserApi(formData.email, formData.password)
+      setIsLoading(false)
       showHintWithTimer('success', 'login success')
       window.location.href = '/login'
     } catch(e: any) {
+      setIsLoading(false)
       showHintWithTimer('alert', 'login failed')
     }
   }
@@ -56,70 +60,73 @@ export default function Home() {
   }
 
   const App = () => (
-    <Layout className="layout">
-      <Layout className="site-layout">
-        { showSuccess && (
-              <Alert type="success" style={alertStyle} message={alertMessage} showIcon/>
-        )}
-        { showAlert && (
-          <Alert type={'error'} style={alertStyle} message={alertMessage} showIcon/>
-        )}
-        <Header
-          className="site-layout-background"
-          style={{
-            padding: 0,
-            paddingInline: 50,
-          }}
-        >
-          <Row align="middle">
-            <Col span={8} >
-              <Title level={2}>Short Url Service</Title>
-            </Col>
-            <Col span={1} offset={12} >
-              <Button onClick={onClickSignIn}>Sign in</Button>
-            </Col>
-          </Row>
-        </Header>
-        <Content
-          className="site-layout-background"
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-          }}
-        >
-          <Title level={2}>Sign Up</Title>
-          <Form
-            name="basic"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 16 }}
-            style={{ maxWidth: 600 }}
-            autoComplete="off"
-            onFinish={onFinish}
+    <Spin spinning={isLoading} style={{minHeight: '100vh'}}>
+      <Layout className="layout">
+        <Layout className="site-layout">
+          { showSuccess && (
+                <Alert type="success" style={alertStyle} message={alertMessage} showIcon/>
+          )}
+          { showAlert && (
+            <Alert type={'error'} style={alertStyle} message={alertMessage} showIcon/>
+          )}
+          <Header
+            className="site-layout-background"
+            style={{
+              padding: 0,
+              paddingInline: 50,
+            }}
           >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[{ required: true, message: 'Please input email' }]}
+            <Row align="middle">
+              <Col span={8} >
+                <Title level={2}>Short Url Service</Title>
+              </Col>
+              <Col span={1} offset={12} >
+                <Button onClick={onClickSignIn}>Sign in</Button>
+              </Col>
+            </Row>
+          </Header>
+          <Content
+            className="site-layout-background"
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+            }}
+          >
+            <Title level={2}>Sign Up</Title>
+            <Form
+              name="basic"
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 16 }}
+              style={{ maxWidth: 600 }}
+              autoComplete="off"
+              onFinish={onFinish}
             >
-              <Input />
-            </Form.Item>
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[{ required: true, message: 'Please input email' }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[{ required: true, message: 'Please input password!' }]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
-        </Content>
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: 'Please input password!' }]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Form.Item>
+            </Form>
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </Spin>
+
   )
 
   useEffect(() => {

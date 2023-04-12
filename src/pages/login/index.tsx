@@ -1,4 +1,4 @@
-import { Layout, Button, Typography, Form, Row, Col, Input, Alert } from 'antd'
+import { Layout, Button, Typography, Form, Row, Col, Input, Alert, Spin } from 'antd'
 import React, { useState, useEffect } from 'react'
 const { Header, Content } = Layout
 const { Title, Text } = Typography
@@ -13,17 +13,44 @@ export default function Home() {
   const onFinish = async (formData: any) => {
     try {
       await loginUserApi(formData.email, formData.password)
-      setAlertMessage('login success')
-      setShowSuccess(true)
+      showHintWithTimer('success', 'login success')
       window.location.href = '/urlentry'
     } catch(e: any) {
-      setAlertMessage('login failed')
-      setShowAlert(true)
+      showHintWithTimer('alert', 'login failed')
     }
   }
 
   const onClickSignUp = (e: any) => {
     window.location.href = '/register'
+  }
+
+  const alertStyle = {
+    position: 'absolute',
+    zIndex: 99,
+    top: 30,
+    width: '50%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    left: 0,
+    right: 0
+  } as React.CSSProperties
+
+  const showHintWithTimer = (type: string, text: string) => {
+    setAlertMessage(text)
+
+    if (type === 'alert') {
+      setShowAlert(true)
+    } else if (type === 'success') {
+      setShowSuccess(true)
+    }
+
+    setTimeout(() => {
+      if (type === 'alert') {
+        setShowAlert(false)
+      } else if (type === 'success') {
+        setShowSuccess(false)
+      }
+    }, 3000)
   }
 
   useEffect(() => {
@@ -37,6 +64,12 @@ export default function Home() {
   return (
       <Layout className="layout">
         <Layout className="site-layout">
+          { showSuccess && (
+              <Alert type="success" style={alertStyle} message={alertMessage} showIcon/>
+          )}
+          { showAlert && (
+            <Alert type={'error'} style={alertStyle} message={alertMessage} showIcon/>
+          )}
           <Header
             className="site-layout-background"
             style={{
@@ -44,12 +77,6 @@ export default function Home() {
               paddingInline: 50,
             }}
           >
-            { showSuccess && (
-              <Alert type="success" message={alertMessage} showIcon/>
-            )}
-            { showAlert && (
-              <Alert type={'error'} message={alertMessage} showIcon/>
-            )}
             <Row align="middle">
               <Col span={8} >
                 <Title level={2}>Short Url Service</Title>

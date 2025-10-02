@@ -2,6 +2,27 @@
 
 A full-stack web application and HTTP API for creating and managing short URL entries. This service allows users to convert long URLs into short, shareable links with optional user authentication for managing personal URL collections.
 
+## 📚 Documentation
+
+- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
+- **[Architecture Documentation](ARCHITECTURE.md)** - Deep dive into system design
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to this project
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Install](#install)
+- [Deploy](#deploy)
+- [Usage](#usage)
+  - [Web Application](#web-application)
+  - [HTTP API](#http-api)
+- [Development Guide](#development-guide)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Contact](#contact)
+
 ## Overview
 
 This project is a URL shortening service built with modern web technologies. It provides both a user-friendly web interface and a RESTful API for programmatic access. Users can create short URLs anonymously or sign up for an account to manage their URL entries with additional features like editing, tracking view counts, and organizing links with names and descriptions.

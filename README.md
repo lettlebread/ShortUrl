@@ -4,9 +4,11 @@ A full-stack web application and HTTP API for creating and managing short URL en
 
 ## 📚 Documentation
 
-- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
-- **[Architecture Documentation](ARCHITECTURE.md)** - Deep dive into system design
-- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to this project
+- **[📖 Documentation Index](DOCS_INDEX.md)** - Complete guide to all documentation
+- **[⚡ Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
+- **[🏗️ Architecture Documentation](ARCHITECTURE.md)** - Deep dive into system design
+- **[📊 Visual Diagrams](DIAGRAMS.md)** - Architecture and flow diagrams
+- **[🤝 Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to this project
 
 ## Table of Contents
 

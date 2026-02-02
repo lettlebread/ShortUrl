@@ -84,6 +84,39 @@ Service instance on Cloud Run has the permission to access the database.
 
 If you want to modify the database setting, please contact the GCP project owner.
 
+## Monitoring and Observability
+
+### What is Datadog?
+Datadog is a monitoring and analytics platform for cloud-scale applications. It provides comprehensive observability across the entire technology stack, including infrastructure, applications, logs, and user experience.
+
+#### Key Features
+* **Application Performance Monitoring (APM)**: Track application performance, identify bottlenecks, and optimize response times
+* **Infrastructure Monitoring**: Monitor servers, containers, databases, and cloud services in real-time
+* **Log Management**: Centralize, search, and analyze logs from all services
+* **Real User Monitoring (RUM)**: Understand user experience and frontend performance
+* **Synthetic Monitoring**: Proactively test endpoints and user journeys
+* **Alerts and Notifications**: Get notified of issues before they impact users
+
+#### How Datadog Could Benefit This Service
+For the Short URL service, Datadog could provide:
+
+1. **API Performance Tracking**: Monitor response times for URL creation, redirects, and user operations
+2. **Database Performance**: Track PostgreSQL query performance and connection pool usage
+3. **Error Tracking**: Capture and alert on application errors and exceptions
+4. **Usage Analytics**: Monitor URL redirect patterns and service usage metrics
+5. **Infrastructure Monitoring**: Track Cloud Run instance performance, memory usage, and scaling behavior
+6. **Custom Metrics**: Track business metrics like URLs created per day, popular links, and user activity
+
+#### Integration Considerations
+To integrate Datadog with this service:
+- Install the Datadog Node.js APM library (`dd-trace`)
+- Add Datadog agent configuration to the Docker container
+- Set environment variables for Datadog API keys and service identification
+- Configure custom metrics for business-specific monitoring needs
+- Set up dashboards and alerts for critical service metrics
+
+For more information, visit [Datadog's official website](https://www.datadoghq.com/).
+
 ## Usage
 ### Web Application
 User can open the url of service instance with following path in browser to use these features.
